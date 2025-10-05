@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/nnpia-cvi-en-bigibos.iml" filepath="$PROJECT_DIR$/.idea/nnpia-cvi-en-bigibos.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nnpiacv.main.iml" filepath="$PROJECT_DIR$/.idea/modules/nnpiacv.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/nnpda-A.iml" filepath="$PROJECT_DIR$/.idea/nnpda-A.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nnpda.main.iml" filepath="$PROJECT_DIR$/.idea/modules/nnpda.main.iml" />
     </modules>
   </component>
 </project>
