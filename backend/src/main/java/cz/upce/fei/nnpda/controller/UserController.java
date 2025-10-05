@@ -1,8 +1,12 @@
 package cz.upce.fei.nnpda.controller;
 
 import cz.upce.fei.nnpda.domain.User;
+import cz.upce.fei.nnpda.dto.UserLoginDTO;
+import cz.upce.fei.nnpda.dto.UserRegisterDTO;
 import cz.upce.fei.nnpda.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -13,36 +17,16 @@ public class UserController {
 
     private final UserService userService;
 
-    @PutMapping("/users/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    @PostMapping("/auth/register")
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterDTO request) {
+        return userService.register(request);
     }
 
-    @PostMapping("/users")
-    public User addUser(@RequestBody User user) {
-        return userService.addUser(user);
+    @PostMapping("/auth/login")
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO request) {
+        String token = userService.login(request);
+        return ResponseEntity.ok().body(token);
     }
 
-    @DeleteMapping("/users/{id}")
-    public User deleteUser(@PathVariable Long id) {
-        return userService.deleteUser(id);
-    }
 
-    @GetMapping("/users/{id}")
-    public User findUser(@PathVariable Long id) {
-        return userService.findUser(id);
-    }
-
-    @GetMapping("/users")
-    public Collection<User> getUsers(@RequestParam(required = false) String email) {
-        if (email != null) {
-            User user = userService.findByEmail(email);
-
-            if (user != null)
-                return Collections.singleton(user);
-
-            return Collections.emptyList();
-        }
-        return userService.findUsers();
-    }
 }
