@@ -16,7 +16,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         // TODO: ověřit z databáze
         if ("admin@upce.cz".equals(request.getEmail()) && "password123".equals(request.getPassword())) {
-            String token = jwtService.generateToken(request.getEmail());
+            String token = jwtService.generateToken(request.getEmail(), JwtService.JwtType.AUTH);
             return ResponseEntity.ok(new LoginResponse(token));
         }
         return ResponseEntity.status(401).build();

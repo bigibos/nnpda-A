@@ -1,15 +1,11 @@
 package cz.upce.fei.nnpda.controller;
 
-import cz.upce.fei.nnpda.domain.User;
-import cz.upce.fei.nnpda.dto.UserLoginDTO;
-import cz.upce.fei.nnpda.dto.UserRegisterDTO;
+import cz.upce.fei.nnpda.dto.*;
 import cz.upce.fei.nnpda.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
 
 @RestController
 @AllArgsConstructor
@@ -24,8 +20,22 @@ public class UserController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO request) {
-        String token = userService.login(request);
-        return ResponseEntity.ok().body(token);
+        return userService.login(request);
+    }
+
+    @PostMapping("/auth/request-password-reset")
+    public ResponseEntity<?> requestPasswordReset(@Valid @RequestBody UserPasswordResetRequestDTO request) {
+        return userService.resetPasswordRequest(request);
+    }
+
+    @PostMapping("/auth/password-reset")
+    public ResponseEntity<?> passwordReset(@Valid @RequestBody UserPasswordResetDTO request) {
+        return userService.passwordReset(request);
+    }
+
+    @PostMapping("/auth/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody UserChangePasswordDTO request) {
+        return userService.changePassword(request);
     }
 
 
