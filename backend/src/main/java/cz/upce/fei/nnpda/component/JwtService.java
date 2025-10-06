@@ -2,9 +2,13 @@ package cz.upce.fei.nnpda.component;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Collections;
 import java.util.Date;
 
 @Service
@@ -48,6 +52,14 @@ public class JwtService {
         } catch (JwtException e) {
             return false;
         }
+    }
+
+    public String getTokenFromHeader(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return "";
     }
 
     public void deleteToken(String token, JwtType expectedType) {
