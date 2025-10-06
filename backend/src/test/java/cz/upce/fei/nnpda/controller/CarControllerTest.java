@@ -1,9 +1,6 @@
 package cz.upce.fei.nnpda.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.upce.fei.nnpda.dto.CarRequestDTO;
-import cz.upce.fei.nnpda.dto.CarRespondDTO; // Make sure to import CarRespondDTO
-import cz.upce.fei.nnpda.service.CarService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;

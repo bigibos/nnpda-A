@@ -1,9 +1,4 @@
 package cz.upce.fei.nnpda.unit;
-import cz.upce.fei.nnpda.domain.Car;
-import cz.upce.fei.nnpda.domain.Racer;
-import cz.upce.fei.nnpda.dto.CarRequestDTO;
-import cz.upce.fei.nnpda.dto.CarRespondDTO;
-import cz.upce.fei.nnpda.dto.RacerRespondDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;

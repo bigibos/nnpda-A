@@ -1,11 +1,5 @@
 package cz.upce.fei.nnpda.integration;
 
-import cz.upce.fei.nnpda.dto.CarRequestDTO;
-import cz.upce.fei.nnpda.dto.CarRespondDTO;
-import cz.upce.fei.nnpda.dto.RacerRequestDTO;
-import cz.upce.fei.nnpda.dto.RacerRespondDTO;
-import cz.upce.fei.nnpda.service.CarService;
-import cz.upce.fei.nnpda.service.RacerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,9 +1,6 @@
 package cz.upce.fei.nnpda.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.upce.fei.nnpda.dto.TeamRequestDTO;
-import cz.upce.fei.nnpda.dto.TeamRespondDTO;
-import cz.upce.fei.nnpda.service.TeamService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
