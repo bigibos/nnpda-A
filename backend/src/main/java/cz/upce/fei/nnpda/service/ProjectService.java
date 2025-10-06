@@ -1,9 +1,9 @@
 package cz.upce.fei.nnpda.service;
 
-import cz.upce.fei.nnpda.component.JwtService;
 import cz.upce.fei.nnpda.domain.Project;
 import cz.upce.fei.nnpda.domain.User;
-import cz.upce.fei.nnpda.dto.ProjectRequestDTO;
+import cz.upce.fei.nnpda.dto.ProjectAddDTO;
+import cz.upce.fei.nnpda.dto.ProjectUpdateDTO;
 import cz.upce.fei.nnpda.dto.ProjectRespondDTO;
 import cz.upce.fei.nnpda.repository.ProjectRepository;
 import cz.upce.fei.nnpda.repository.UserRepository;
@@ -26,20 +26,20 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
 
-    public ProjectRespondDTO addProject(ProjectRequestDTO project) {
+    public ProjectRespondDTO addProject(ProjectAddDTO project) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username);
 
         Project newProject = modelMapper.map(project, Project.class);
         newProject.setUser(user);
-        newProject.setStatus(project.getStatus());
+        newProject.setStatus(Project.Status.ACTIVE);
 
         newProject = projectRepository.save(newProject);
 
         return modelMapper.map(newProject, ProjectRespondDTO.class);
     }
 
-    public ProjectRespondDTO updateProject(Long id, ProjectRequestDTO projectDTO) {
+    public ProjectRespondDTO updateProject(Long id, ProjectUpdateDTO projectDTO) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username);
 

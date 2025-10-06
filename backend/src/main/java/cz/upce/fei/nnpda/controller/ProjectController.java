@@ -1,6 +1,6 @@
 package cz.upce.fei.nnpda.controller;
 
-import cz.upce.fei.nnpda.dto.ProjectRequestDTO;
+import cz.upce.fei.nnpda.dto.ProjectUpdateDTO;
 import cz.upce.fei.nnpda.dto.ProjectRespondDTO;
 import cz.upce.fei.nnpda.service.ProjectService;
 import jakarta.validation.Valid;
@@ -18,13 +18,13 @@ public class ProjectController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/projects")
-    public ProjectRespondDTO addProject(@Valid @RequestBody ProjectRequestDTO project) {
+    public ProjectRespondDTO addProject(@Valid @RequestBody ProjectUpdateDTO project) {
         return projectService.addProject(project);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/projects/{id}")
-    public ProjectRespondDTO updateProject(@PathVariable Long id, @Valid @RequestBody ProjectRequestDTO project) {
+    public ProjectRespondDTO updateProject(@PathVariable Long id, @Valid @RequestBody ProjectUpdateDTO project) {
         return projectService.updateProject(id, project);
     }
 

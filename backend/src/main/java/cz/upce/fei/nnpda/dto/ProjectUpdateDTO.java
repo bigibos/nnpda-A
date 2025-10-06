@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectRequestDTO {
+public class ProjectUpdateDTO {
 
     @NotNull
     @NotBlank
