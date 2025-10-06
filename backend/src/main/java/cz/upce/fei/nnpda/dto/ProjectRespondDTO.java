@@ -18,4 +18,7 @@ public class ProjectRespondDTO {
 
     @JsonIgnoreProperties("projects")
     private UserRespondDTO user;
+
+    @JsonIgnoreProperties("project")
+    private List<TicketRespondDTO> tickets;
 }

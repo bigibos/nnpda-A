@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    Optional<Project> findByIdAndUser(Long id, User user);
-    List<Project> findByUser(User user);
+    Optional<Project> findByIdAndUserUsername(Long id, String username);
+    List<Project> findByUserUsername(String username);
 }

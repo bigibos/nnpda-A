@@ -29,5 +29,8 @@ public class Project {
     @JsonIgnoreProperties("projects")
     private User user;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Ticket> tickets;
+
     public Project() { }
 }
