@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TicketRespondDTO {
+    private Long id;
     private String name;
     private Ticket.Type type;
     private Ticket.Priority priority;

@@ -6,15 +6,14 @@ import cz.upce.fei.nnpda.dto.ProjectAddDTO;
 import cz.upce.fei.nnpda.dto.ProjectUpdateDTO;
 import cz.upce.fei.nnpda.repository.ProjectRepository;
 import cz.upce.fei.nnpda.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,7 +42,7 @@ public class ProjectService {
         User user = userRepository.findByUsername(username);
 
         Project project = projectRepository.findByIdAndUserUsername(id, username)
-                .orElseThrow(() -> new AccessDeniedException("Project is property of other user"));
+                .orElseThrow(EntityNotFoundException::new);
 
         modelMapper.map(projectDTO, project);
         project.setStatus(projectDTO.getStatus());
@@ -56,7 +55,7 @@ public class ProjectService {
         User user = userRepository.findByUsername(username);
 
         Project project = projectRepository.findByIdAndUserUsername(id, username)
-                .orElseThrow(() -> new AccessDeniedException("Project is property of other user"));
+                .orElseThrow(EntityNotFoundException::new);
 
         projectRepository.deleteById(project.getId());
 
@@ -72,9 +71,7 @@ public class ProjectService {
     public Project findProject(Long id) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Project project = projectRepository.findByIdAndUserUsername(id, username)
-                .orElseThrow(() -> new AccessDeniedException("Project is property of other user"));
-
-        return project;
+        return projectRepository.findByIdAndUserUsername(id, username)
+                .orElseThrow(EntityNotFoundException::new);
     }
 }

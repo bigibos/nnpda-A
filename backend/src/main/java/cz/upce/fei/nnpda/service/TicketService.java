@@ -5,6 +5,7 @@ import cz.upce.fei.nnpda.domain.Ticket;
 import cz.upce.fei.nnpda.dto.TicketAddDTO;
 import cz.upce.fei.nnpda.dto.TicketUpdateDTO;
 import cz.upce.fei.nnpda.repository.TicketRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -31,6 +31,8 @@ public class TicketService {
         Ticket ticket = modelMapper.map(ticketDto, Ticket.class);
         ticket.setProject(project);
         ticket.setStatus(Ticket.Status.OPEN);
+        ticket.setType(ticketDto.getType());
+        ticket.setPriority(ticketDto.getPriority());
 
         ticket = ticketRepository.save(ticket);
         project.getTickets().add(ticket);
@@ -43,10 +45,15 @@ public class TicketService {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
 
         Ticket ticket = ticketRepository.findByProjectIdAndIdAndProjectUserUsername(projectId, ticketId, username)
-                .orElseThrow(() -> new AccessDeniedException("Not found"));
+                .orElseThrow(EntityNotFoundException::new);
 
         modelMapper.map(ticketDto, ticket);
+        ticket.setStatus(ticketDto.getStatus());
+        ticket.setType(ticketDto.getType());
+        ticket.setPriority(ticketDto.getPriority());
+
         ticket = ticketRepository.save(ticket);
+
 
         return ticket;
     }
@@ -56,22 +63,19 @@ public class TicketService {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
 
         Ticket ticket = ticketRepository.findByProjectIdAndIdAndProjectUserUsername(projectId, ticketId, username)
-                .orElseThrow(() -> new AccessDeniedException("Not found"));
+                .orElseThrow(EntityNotFoundException::new);
         ticketRepository.delete(ticket);
     }
 
     public Collection<Ticket> findTickets(Long projectId) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
-        List<Ticket> tickets = ticketRepository.findByProjectIdAndProjectUserUsername(projectId, username);
-        return tickets;
+        return ticketRepository.findByProjectIdAndProjectUserUsername(projectId, username);
     }
 
     public Ticket findTicket(Long projectId, Long ticketId) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Ticket ticket = ticketRepository.findByProjectIdAndIdAndProjectUserUsername(projectId, ticketId, username)
-                .orElseThrow(() -> new AccessDeniedException("Not found"));
-
-        return ticket;
+        return ticketRepository.findByProjectIdAndIdAndProjectUserUsername(projectId, ticketId, username)
+                .orElseThrow(EntityNotFoundException::new);
     }
 }

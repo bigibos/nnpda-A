@@ -16,9 +16,11 @@ public class TicketAddDTO {
     @NotBlank
     private String name;
 
+    @NotNull
     @ValidEnum(enumClass = Ticket.Priority.class)
     private String priority;
 
+    @NotNull
     @ValidEnum(enumClass = Ticket.Type.class)
     private String type;
 

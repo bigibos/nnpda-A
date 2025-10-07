@@ -21,6 +21,7 @@ public class ProjectUpdateDTO {
     @NotBlank
     private String description;
 
+    @NotNull
     @ValidEnum(enumClass = Project.Status.class)
     private String status;
 
