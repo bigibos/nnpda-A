@@ -35,7 +35,7 @@ public class UserService {
 
         String tokenInput = newUser.getUsername();
 
-        return ResponseEntity.ok(jwtService.generateToken(tokenInput, JwtService.JwtType.AUTH));
+        return ResponseEntity.ok(jwtService.generateToken(tokenInput, JwtService.JwtType.AUTH, 15));
     }
 
     public ResponseEntity<?> resetPasswordRequest(UserPasswordResetRequestDTO user) {
@@ -46,7 +46,7 @@ public class UserService {
 
         String tokenInput = newUser.getEmail();
 
-        return ResponseEntity.ok().body(jwtService.generateToken(tokenInput, JwtService.JwtType.PASSWORD_RESET));
+        return ResponseEntity.ok().body(jwtService.generateToken(tokenInput, JwtService.JwtType.PASSWORD_RESET, 10));
     }
 
     public ResponseEntity<?> passwordReset(UserPasswordResetDTO user) {

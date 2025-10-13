@@ -1,5 +1,7 @@
 package cz.upce.fei.nnpda.component;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,13 +30,20 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
         String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
-            if (jwtService.validateToken(token, JwtService.JwtType.AUTH)) {
+        try {
+            if (header != null && header.startsWith("Bearer ")) {
+                String token = header.substring(7);
+                jwtService.validateToken(token, JwtService.JwtType.AUTH);
                 String subject = jwtService.extractSubject(token);
                 var auth = new UsernamePasswordAuthenticationToken(subject, null, Collections.emptyList());
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
+        } catch (ExpiredJwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        } catch (JwtException e) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
         }
 
         filterChain.doFilter(request, response);

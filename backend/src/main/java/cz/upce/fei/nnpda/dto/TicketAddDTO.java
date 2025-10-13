@@ -4,6 +4,7 @@ import cz.upce.fei.nnpda.domain.Ticket;
 import cz.upce.fei.nnpda.validator.ValidEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class TicketAddDTO {
     @NotNull
     @NotBlank
+    @Size(min = 1, max = 160)
     private String name;
 
     @NotNull

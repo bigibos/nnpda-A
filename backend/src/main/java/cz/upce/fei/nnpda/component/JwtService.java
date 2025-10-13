@@ -21,12 +21,14 @@ public class JwtService {
 
     private final Key key = Keys.hmacShaKeyFor("tajny_super_klic_123456789012345678901234567890".getBytes());
 
-    public String generateToken(String subject, JwtType type) {
+    public String generateToken(String subject, JwtType type, long expirationInMinutes) {
+        long expirationInMilliseconds = expirationInMinutes * 60 * 60;
+
         return Jwts.builder()
                 .setSubject(subject)
                 .claim("type", type)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1h
+                .setExpiration(new Date(System.currentTimeMillis() + expirationInMilliseconds))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -39,19 +41,15 @@ public class JwtService {
     }
 
     public boolean validateToken(String token, JwtType expectedType) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
 
-            JwtType type = JwtType.valueOf(claims.get("type", String.class));
+        JwtType type = JwtType.valueOf(claims.get("type", String.class));
 
-            return expectedType.equals(type);
-        } catch (JwtException e) {
-            return false;
-        }
+        return expectedType.equals(type);
     }
 
     public String getTokenFromHeader(HttpServletRequest request) {

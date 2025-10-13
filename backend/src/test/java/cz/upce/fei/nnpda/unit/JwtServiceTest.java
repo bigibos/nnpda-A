@@ -19,7 +19,7 @@ public class JwtServiceTest {
     void shouldGenerateValidToken() {
         String username = "testuser";
 
-        String token = jwtService.generateToken(username, JwtService.JwtType.AUTH);
+        String token = jwtService.generateToken(username, JwtService.JwtType.AUTH, 15);
 
         assertNotNull(token);
         assertTrue(jwtService.validateToken(token, JwtService.JwtType.AUTH));
@@ -29,7 +29,7 @@ public class JwtServiceTest {
     @Test
     void shouldFailValidationForTamperedToken() {
         String username = "testuser";
-        String token = jwtService.generateToken(username, JwtService.JwtType.AUTH);
+        String token = jwtService.generateToken(username, JwtService.JwtType.AUTH, 15);
 
         // Úmyslně upravený token (např. odebrání posledního znaku)
         String tamperedToken = token.substring(0, token.length() - 1);
