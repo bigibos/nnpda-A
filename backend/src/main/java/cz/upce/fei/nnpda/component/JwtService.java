@@ -22,7 +22,7 @@ public class JwtService {
     private final Key key = Keys.hmacShaKeyFor("tajny_super_klic_123456789012345678901234567890".getBytes());
 
     public String generateToken(String subject, JwtType type, long expirationInMinutes) {
-        long expirationInMilliseconds = expirationInMinutes * 60 * 60;
+        long expirationInMilliseconds = expirationInMinutes * 60 * 1000;
 
         return Jwts.builder()
                 .setSubject(subject)

@@ -43,10 +43,6 @@ public class GlobalExceptionHandler {
         if (ex instanceof AccessDeniedException)
             return createResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
 
-        // JWT Expired
-        if (ex instanceof ExpiredJwtException)
-            return createResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-
         return createResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
