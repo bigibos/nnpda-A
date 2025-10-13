@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,59 +20,75 @@ public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<?> register(UserRegisterDTO user) {
-        User newUser = modelMapper.map(user, User.class);
-        newUser = userRepository.save(newUser);
+    public ResponseEntity<?> register(UserRegisterDTO userDto) {
+        User user = modelMapper.map(userDto, User.class);
+
+        String passwordHash = passwordEncoder.encode(user.getPassword());
+        user.setPassword(passwordHash);
+
+        userRepository.save(user);
 
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> login(UserLoginDTO user) {
+    public ResponseEntity<?> login(UserLoginDTO userDto) {
 
-        User newUser = userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+        User user = userRepository.findByUsername(userDto.getUsername());
 
-        if (newUser == null)
-            return ResponseEntity.status(401).body("Invalid username or password");
+        if (user == null)
+            return ResponseEntity.status(401).body("Invalid username");
 
-        String tokenInput = newUser.getUsername();
+        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword()))
+            return ResponseEntity.status(401).body("Invalid password");
+
+        String tokenInput = user.getUsername();
 
         return ResponseEntity.ok(jwtService.generateToken(tokenInput, JwtService.JwtType.AUTH, 15));
     }
 
-    public ResponseEntity<?> resetPasswordRequest(UserPasswordResetRequestDTO user) {
-        User newUser = userRepository.findByEmail(user.getEmail());
+    public ResponseEntity<?> resetPasswordRequest(UserPasswordResetRequestDTO userDto) {
+        User user = userRepository.findByEmail(userDto.getEmail());
 
-        if (newUser == null)
-            return ResponseEntity.notFound().build();
+        if (user == null)
+            return ResponseEntity.status(401).body("Invalid email");
 
-        String tokenInput = newUser.getEmail();
+        String tokenInput = user.getEmail();
 
         return ResponseEntity.ok().body(jwtService.generateToken(tokenInput, JwtService.JwtType.PASSWORD_RESET, 10));
     }
 
-    public ResponseEntity<?> passwordReset(UserPasswordResetDTO user) {
-        String email = jwtService.extractSubject(user.getToken());
-        User newUser = userRepository.findByEmail(email);
+    public ResponseEntity<?> passwordReset(UserPasswordResetDTO userDto) {
+        String email = jwtService.extractSubject(userDto.getToken());
+        String passwordHash = passwordEncoder.encode(userDto.getPassword());
 
-        if (newUser == null)
-            return ResponseEntity.notFound().build();
+        User user = userRepository.findByEmail(email);
 
-        newUser.setPassword(user.getPassword());
-        userRepository.save(newUser);
+        if (user == null)
+            return ResponseEntity.status(401).body("Invalid email");
 
-        return ResponseEntity.ok().body("Heslo resetovano");
+        user.setPassword(passwordHash);
+        userRepository.save(user);
+
+        return ResponseEntity.ok().body("Password reset successful");
     }
 
-    public ResponseEntity<?> changePassword(UserChangePasswordDTO user) {
+    public ResponseEntity<?> changePassword(UserChangePasswordDTO userDto) {
 
-        User newUser = userRepository.findByPassword(user.getOldPassword());
+        String username =  SecurityContextHolder.getContext().getAuthentication().getName();
+        String newPasswordHash = passwordEncoder.encode(userDto.getNewPassword());
 
-        if (newUser == null)
-            return ResponseEntity.notFound().build();
+        User user = userRepository.findByUsername(username);
 
-        newUser.setPassword(user.getNewPassword());
-        newUser = userRepository.save(newUser);
+        if (user == null)
+            return ResponseEntity.status(401).body("Invalid username");
+
+        if (!passwordEncoder.matches(userDto.getOldPassword(), user.getPassword()))
+            return ResponseEntity.status(401).body("Invalid password");
+
+        user.setPassword(newPasswordHash);
+        userRepository.save(user);
 
         return ResponseEntity.ok().build();
     }
