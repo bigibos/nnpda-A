@@ -1,5 +1,8 @@
 package cz.upce.fei.nnpda.exception;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.core.NestedRuntimeException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,20 +28,34 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        Map<String, String> errors = new HashMap<>();
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleException(Exception ex) {
+        if (ex instanceof DataIntegrityViolationException)
+            return createResponse("Jedna, nebo více položek není unikatní.", HttpStatus.BAD_REQUEST);
+        if (ex instanceof AccessDeniedException)
+            return createResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
+        if (ex instanceof EntityNotFoundException)
+            return createResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
 
-        errors.put("message", "Jedna, nebo více položek není unikatní.");
-
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return createResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return createResponse("Jedna, nebo více položek není unikatní.", HttpStatus.BAD_REQUEST);
+    }
+
     public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
+        return createResponse(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
+    public ResponseEntity<Map<String, String>> handleEntityNotFound(EntityNotFoundException ex) {
+        return createResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    private ResponseEntity<Map<String, String>> createResponse(String message, HttpStatus status) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+        body.put("error", message);
+        return new ResponseEntity<>(body, status);
     }
 
     /*

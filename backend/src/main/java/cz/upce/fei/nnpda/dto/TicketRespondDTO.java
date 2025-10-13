@@ -17,5 +17,5 @@ public class TicketRespondDTO {
     private Ticket.Status status;
 
     @JsonIgnoreProperties("tickets")
-    private ProjectRespondDTO preoject;
+    private ProjectRespondDTO project;
 }
