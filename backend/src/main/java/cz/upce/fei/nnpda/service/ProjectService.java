@@ -10,8 +10,11 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Collection;
 
@@ -39,10 +42,12 @@ public class ProjectService {
 
     public Project updateProject(Long id, ProjectUpdateDTO projectDTO) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username);
 
-        Project project = projectRepository.findByIdAndUserUsername(id, username)
+        Project project = projectRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
+
+        if (!project.getUser().getUsername().equals(username))
+            throw new AccessDeniedException("You do not have permission to update this project");
 
         modelMapper.map(projectDTO, project);
         project.setStatus(projectDTO.getStatus());
@@ -52,10 +57,12 @@ public class ProjectService {
 
     public Project deleteProject(Long id) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username);
 
-        Project project = projectRepository.findByIdAndUserUsername(id, username)
+        Project project = projectRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
+
+        if (!project.getUser().getUsername().equals(username))
+            throw new AccessDeniedException("You do not have permission to delete this project");
 
         projectRepository.deleteById(project.getId());
 
@@ -71,7 +78,12 @@ public class ProjectService {
     public Project findProject(Long id) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return projectRepository.findByIdAndUserUsername(id, username)
+        Project project = projectRepository.findById(id)
                 .orElseThrow(EntityNotFoundException::new);
+
+        if (!project.getUser().getUsername().equals(username))
+            throw new AccessDeniedException("You do not have permission to view this project");
+
+        return project;
     }
 }
