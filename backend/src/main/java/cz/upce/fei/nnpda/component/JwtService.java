@@ -47,7 +47,12 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody();
 
-        JwtType type = JwtType.valueOf(claims.get("type", String.class));
+        String typeString = claims.get("type", String.class);
+        if (typeString == null) return false;
+
+        JwtType type = JwtType.valueOf(typeString);
+
+        System.out.println(expectedType + " == " + type);
 
         return expectedType.equals(type);
     }

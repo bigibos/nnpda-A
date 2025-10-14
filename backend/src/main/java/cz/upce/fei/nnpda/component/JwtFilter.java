@@ -33,7 +33,11 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             if (header != null && header.startsWith("Bearer ")) {
                 String token = header.substring(7);
-                jwtService.validateToken(token, JwtService.JwtType.AUTH);
+                if (!jwtService.validateToken(token, JwtService.JwtType.AUTH)) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+
                 String subject = jwtService.extractSubject(token);
                 var auth = new UsernamePasswordAuthenticationToken(subject, null, Collections.emptyList());
                 SecurityContextHolder.getContext().setAuthentication(auth);
