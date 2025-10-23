@@ -1,11 +1,9 @@
-package cz.upce.fei.nnpda.dto;
+package cz.upce.fei.nnpda.dto.User;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.UniqueElements;
 
 @Data
 @AllArgsConstructor

@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @Entity
@@ -44,6 +47,14 @@ public class Ticket {
     @JoinColumn(name="project_id", referencedColumnName="id")
     @JsonIgnoreProperties("tickets")
     private Project project;
+
+    @ManyToOne
+    @JoinColumn(name="user_id", referencedColumnName="id")
+    @JsonIgnoreProperties("tickets")
+    private User user;
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<TicketLog> logs = new ArrayList<>();
 
     public Ticket() {}
 }

@@ -1,8 +1,8 @@
 package cz.upce.fei.nnpda.controller;
 
-import cz.upce.fei.nnpda.dto.ProjectAddDTO;
-import cz.upce.fei.nnpda.dto.ProjectUpdateDTO;
-import cz.upce.fei.nnpda.dto.ProjectRespondDTO;
+import cz.upce.fei.nnpda.dto.Project.ProjectAddDTO;
+import cz.upce.fei.nnpda.dto.Project.ProjectUpdateDTO;
+import cz.upce.fei.nnpda.dto.Project.ProjectRespondDTO;
 import cz.upce.fei.nnpda.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

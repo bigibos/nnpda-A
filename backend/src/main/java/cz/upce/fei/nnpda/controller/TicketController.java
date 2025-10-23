@@ -1,8 +1,8 @@
 package cz.upce.fei.nnpda.controller;
 
-import cz.upce.fei.nnpda.dto.TicketAddDTO;
-import cz.upce.fei.nnpda.dto.TicketRespondDTO;
-import cz.upce.fei.nnpda.dto.TicketUpdateDTO;
+import cz.upce.fei.nnpda.dto.Ticket.TicketAddDTO;
+import cz.upce.fei.nnpda.dto.Ticket.TicketRespondDTO;
+import cz.upce.fei.nnpda.dto.Ticket.TicketUpdateDTO;
 import cz.upce.fei.nnpda.service.TicketService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -52,5 +52,19 @@ public class TicketController {
     @GetMapping("/projects/{projectId}/tickets/{id}")
     public TicketRespondDTO findTicket(@PathVariable Long projectId, @PathVariable Long id) {
         return modelMapper.map(ticketService.findTicket(projectId, id), TicketRespondDTO.class);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/users/{userId}/tickets/{id}")
+    public TicketRespondDTO updateTicketUser(@PathVariable Long userId, @PathVariable Long id) {
+        return modelMapper.map(ticketService.updateTicketUser(userId, id), TicketRespondDTO.class);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/users/{userId}/tickets/{id}")
+    public ResponseEntity<?> deleteTicketUser(@PathVariable Long userId, @PathVariable Long id) {
+        ticketService.deleteTicketUser(userId, id);
+
+        return ResponseEntity.noContent().build();
     }
 }

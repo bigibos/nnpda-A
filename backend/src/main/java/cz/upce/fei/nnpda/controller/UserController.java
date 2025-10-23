@@ -1,6 +1,6 @@
 package cz.upce.fei.nnpda.controller;
 
-import cz.upce.fei.nnpda.dto.*;
+import cz.upce.fei.nnpda.dto.User.*;
 import cz.upce.fei.nnpda.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

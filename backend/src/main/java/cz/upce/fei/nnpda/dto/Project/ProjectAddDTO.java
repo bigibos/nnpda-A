@@ -1,9 +1,8 @@
-package cz.upce.fei.nnpda.dto;
+package cz.upce.fei.nnpda.dto.Project;
 
-import cz.upce.fei.nnpda.domain.Project;
-import cz.upce.fei.nnpda.validator.ValidEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,21 +10,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectUpdateDTO {
-
+public class ProjectAddDTO {
     @NotNull
     @NotBlank
+    @Size(min = 1, max = 120)
     private String name;
 
     @NotNull
     @NotBlank
     private String description;
-
-    @NotNull
-    @ValidEnum(enumClass = Project.Status.class)
-    private String status;
-
-    public Project.Status getStatus() {
-        return Project.Status.valueOf(status);
-    }
 }

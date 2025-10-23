@@ -2,15 +2,15 @@ package cz.upce.fei.nnpda.service;
 
 import cz.upce.fei.nnpda.domain.Project;
 import cz.upce.fei.nnpda.domain.Ticket;
-import cz.upce.fei.nnpda.dto.TicketAddDTO;
-import cz.upce.fei.nnpda.dto.TicketUpdateDTO;
+import cz.upce.fei.nnpda.domain.TicketLog;
+import cz.upce.fei.nnpda.dto.Ticket.TicketAddDTO;
+import cz.upce.fei.nnpda.dto.Ticket.TicketUpdateDTO;
 import cz.upce.fei.nnpda.repository.TicketRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,7 @@ public class TicketService {
     private final ModelMapper modelMapper;
     private final TicketRepository ticketRepository;
     private final ProjectService projectService;
+    private final TicketLogService ticketLogService;
 
     @Transactional
     public Ticket addTicket(Long projectId, TicketAddDTO ticketDto) {
@@ -46,6 +47,8 @@ public class TicketService {
 
         Ticket ticket = ticketRepository.findByProjectIdAndIdAndProjectUserUsername(projectId, ticketId, username)
                 .orElseThrow(EntityNotFoundException::new);
+
+        ticketLogService.addTicketLog(ticket);
 
         modelMapper.map(ticketDto, ticket);
         ticket.setStatus(ticketDto.getStatus());
@@ -77,5 +80,31 @@ public class TicketService {
 
         return ticketRepository.findByProjectIdAndIdAndProjectUserUsername(projectId, ticketId, username)
                 .orElseThrow(EntityNotFoundException::new);
+    }
+
+
+    @Transactional
+    public Ticket updateTicketUser(Long userId, Long ticketId) {
+        String username =  SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // TODO: Uzivatel nema pristup k projektu, kte kteremu je prirazen dany tiket - vyresit co a jak?
+        Ticket ticket = ticketRepository.findByProjectIdAndIdAndProjectUserUsername(userId, ticketId, username)
+                .orElseThrow(EntityNotFoundException::new);
+
+
+        ticket = ticketRepository.save(ticket);
+
+
+        return ticket;
+    }
+
+    @Transactional
+    public void deleteTicketUser(Long userId, Long ticketId) {
+        String username =  SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // TODO: Uzivatel nema pristup k projektu, kte kteremu je prirazen dany tiket - vyresit co a jak?
+        Ticket ticket = ticketRepository.findByProjectIdAndIdAndProjectUserUsername(userId, ticketId, username)
+                .orElseThrow(EntityNotFoundException::new);
+        ticketRepository.delete(ticket);
     }
 }

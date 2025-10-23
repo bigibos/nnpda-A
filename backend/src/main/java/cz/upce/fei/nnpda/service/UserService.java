@@ -2,7 +2,7 @@ package cz.upce.fei.nnpda.service;
 
 import cz.upce.fei.nnpda.component.JwtService;
 import cz.upce.fei.nnpda.domain.User;
-import cz.upce.fei.nnpda.dto.*;
+import cz.upce.fei.nnpda.dto.User.*;
 import cz.upce.fei.nnpda.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

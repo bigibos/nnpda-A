@@ -1,7 +1,9 @@
-package cz.upce.fei.nnpda.dto;
+package cz.upce.fei.nnpda.dto.Project;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.upce.fei.nnpda.domain.Project;
+import cz.upce.fei.nnpda.dto.Ticket.TicketRespondDTO;
+import cz.upce.fei.nnpda.dto.User.UserRespondDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

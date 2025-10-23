@@ -1,7 +1,7 @@
-package cz.upce.fei.nnpda.dto;
+package cz.upce.fei.nnpda.dto.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
+import cz.upce.fei.nnpda.dto.Project.ProjectRespondDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

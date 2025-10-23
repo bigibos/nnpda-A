@@ -1,4 +1,4 @@
-package cz.upce.fei.nnpda.dto;
+package cz.upce.fei.nnpda.dto.Ticket;
 
 import cz.upce.fei.nnpda.domain.Ticket;
 import cz.upce.fei.nnpda.validator.ValidEnum;
