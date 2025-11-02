@@ -1,8 +1,12 @@
 package cz.upce.fei.nnpda.controller;
 
+import cz.upce.fei.nnpda.domain.Project;
+import cz.upce.fei.nnpda.dto.Comment.CommentRequestDTO;
+import cz.upce.fei.nnpda.dto.Comment.CommentRespondDTO;
 import cz.upce.fei.nnpda.dto.Project.ProjectAddDTO;
 import cz.upce.fei.nnpda.dto.Project.ProjectUpdateDTO;
 import cz.upce.fei.nnpda.dto.Project.ProjectRespondDTO;
+import cz.upce.fei.nnpda.service.CommentService;
 import cz.upce.fei.nnpda.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -19,6 +23,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final ModelMapper modelMapper;
+    private final CommentService commentService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/projects")

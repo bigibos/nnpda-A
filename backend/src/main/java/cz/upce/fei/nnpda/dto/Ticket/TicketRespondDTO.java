@@ -2,6 +2,7 @@ package cz.upce.fei.nnpda.dto.Ticket;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import cz.upce.fei.nnpda.domain.Ticket;
+import cz.upce.fei.nnpda.dto.Comment.CommentRespondDTO;
 import cz.upce.fei.nnpda.dto.Project.ProjectRespondDTO;
 import cz.upce.fei.nnpda.dto.TicketLog.TicketLogRespondDTO;
 import lombok.AllArgsConstructor;
@@ -25,4 +26,7 @@ public class TicketRespondDTO {
 
     @JsonIgnoreProperties("ticket")
     private List<TicketLogRespondDTO> logs;
+
+    @JsonIgnoreProperties("ticket")
+    private List<CommentRespondDTO> comments;
 }

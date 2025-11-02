@@ -75,6 +75,13 @@ public class TicketService {
         return ticketRepository.findByProjectIdAndProjectUserUsername(projectId, username);
     }
 
+    public Ticket findTicket(Long ticketId) {
+        String username =  SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return ticketRepository.findById(ticketId)
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
     public Ticket findTicket(Long projectId, Long ticketId) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
 

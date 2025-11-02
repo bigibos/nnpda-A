@@ -1,8 +1,11 @@
 package cz.upce.fei.nnpda.controller;
 
+import cz.upce.fei.nnpda.dto.Comment.CommentRequestDTO;
+import cz.upce.fei.nnpda.dto.Comment.CommentRespondDTO;
 import cz.upce.fei.nnpda.dto.Ticket.TicketAddDTO;
 import cz.upce.fei.nnpda.dto.Ticket.TicketRespondDTO;
 import cz.upce.fei.nnpda.dto.Ticket.TicketUpdateDTO;
+import cz.upce.fei.nnpda.service.CommentService;
 import cz.upce.fei.nnpda.service.TicketService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 public class TicketController {
     private final ModelMapper modelMapper;
     private final TicketService ticketService;
+    private final CommentService commentService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/projects/{projectId}/tickets")
