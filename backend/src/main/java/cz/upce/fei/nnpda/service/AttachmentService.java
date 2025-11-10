@@ -1,7 +1,7 @@
 package cz.upce.fei.nnpda.service;
 
-import cz.upce.fei.nnpda.domain.Project;
 import cz.upce.fei.nnpda.domain.Attachment;
+import cz.upce.fei.nnpda.domain.Project;
 import cz.upce.fei.nnpda.domain.Ticket;
 import cz.upce.fei.nnpda.dto.Attachment.AttachmentRequestDTO;
 import cz.upce.fei.nnpda.repository.AttachmentRepository;
@@ -26,13 +26,18 @@ public class AttachmentService {
     private final TicketService ticketService;
 
 
-    public Attachment saveAttachment(MultipartFile file) throws Exception {
-        Attachment attachment = new Attachment();
-        attachment.setName(file.getOriginalFilename());
-        attachment.setType(file.getContentType());
-        attachment.setData(file.getBytes());
-
-        return attachmentRepository.save(attachment);
+    public Attachment processFile(MultipartFile file) {
+        try {
+            Attachment attachment = new Attachment();
+            attachment.setName(file.getOriginalFilename());
+            attachment.setType(file.getContentType());
+            attachment.setData(file.getBytes());
+            return attachment;
+        }
+        catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
     }
 
     public Attachment getAttachment(Long id) {
@@ -42,7 +47,7 @@ public class AttachmentService {
 
 
     @Transactional
-    public Attachment addProjectAttachment(Long projectId, MultipartFile file) throws Exception {
+    public Attachment addProjectAttachment(Long projectId, AttachmentRequestDTO attachmentDto) {
 
         Project project = projectService.findProject(projectId);
         /*
@@ -50,14 +55,15 @@ public class AttachmentService {
         attachment.setProject(project);
         attachment = attachmentRepository.save(attachment);
          */
-        Attachment attachment = saveAttachment(file);
-        project.getAttachments().add(attachment);
-
+        Attachment attachment = processFile(attachmentDto.getFile());
+        attachment.setProject(project);
+        attachment = attachmentRepository.save(attachment);
+        // project.getAttachments().add(attachment);
         return attachment;
     }
 
     @Transactional
-    public Attachment addTicketAttachment(Long ticketId, MultipartFile file) throws Exception {
+    public Attachment addTicketAttachment(Long ticketId, AttachmentRequestDTO attachmentDto) {
 
         Ticket ticket = ticketService.findTicket(ticketId);
         /*
@@ -65,7 +71,7 @@ public class AttachmentService {
         attachment.setTicket(ticket);
         attachment = attachmentRepository.save(attachment);
         */
-        Attachment attachment = saveAttachment(file);
+        Attachment attachment = processFile(attachmentDto.getFile());
         ticket.getAttachments().add(attachment);
 
         return attachment;
