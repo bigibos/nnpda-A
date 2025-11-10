@@ -29,8 +29,8 @@ public class AttachmentController {
             value = "attachments/projects/{id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public AttachmentRespondDTO addProjectAttachment(@PathVariable Long id, AttachmentRequestDTO attachment) {
-        return modelMapper.map(attachmentService.addProjectAttachment(id, attachment), AttachmentRespondDTO.class);
+    public AttachmentRespondDTO addProjectAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        return modelMapper.map(attachmentService.uploadProjectAttachment(id, file), AttachmentRespondDTO.class);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -38,8 +38,8 @@ public class AttachmentController {
             value = "attachments/ticket/{id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public AttachmentRespondDTO addTicketAttachment(@PathVariable Long id, AttachmentRequestDTO attachment) {
-        return modelMapper.map(attachmentService.addTicketAttachment(id, attachment), AttachmentRespondDTO.class);
+    public AttachmentRespondDTO addTicketAttachment(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        return modelMapper.map(attachmentService.uploadTicketAttachment(id, file), AttachmentRespondDTO.class);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -60,33 +60,16 @@ public class AttachmentController {
         return ResponseEntity.noContent().build();
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/attachments")
-    public Collection<AttachmentRespondDTO> getAttachments() {
-        /*
-        return attachmentService.findAttachments().stream()
-                .map(attachment -> modelMapper.map(attachment, AttachmentRespondDTO.class))
-                .collect(Collectors.toList());
-
-         */
-        return null;
-    }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/attachments/{id}")
-    public ResponseEntity<byte[]> findAttachment(@PathVariable Long id) {
-
-        Attachment attachment = attachmentService.findAttachment(id);
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(attachment.getType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + attachment.getName() + "\"")
-                .body(attachment.getData());
-
-        /*
+    public AttachmentRespondDTO findAttachment(@PathVariable Long id) {
         return modelMapper.map(attachmentService.findAttachment(id), AttachmentRespondDTO.class);
+    }
 
-         */
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/attachments/{id}/download")
+    public ResponseEntity<byte[]> downloadAttachment(@PathVariable Long id) {
+        return attachmentService.downloadFile(id);
     }
 }

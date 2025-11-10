@@ -10,11 +10,12 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Collection;
 
 @Service
 @Slf4j
@@ -26,7 +27,7 @@ public class AttachmentService {
     private final TicketService ticketService;
 
 
-    public Attachment processFile(MultipartFile file) {
+    public Attachment uploadFile(MultipartFile file) {
         try {
             Attachment attachment = new Attachment();
             attachment.setName(file.getOriginalFilename());
@@ -35,63 +36,47 @@ public class AttachmentService {
             return attachment;
         }
         catch (Exception e) {
-            System.out.println(e);
             return null;
         }
     }
 
-    public Attachment getAttachment(Long id) {
-        return attachmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Attachment not found"));
-    }
-
-
-    @Transactional
-    public Attachment addProjectAttachment(Long projectId, AttachmentRequestDTO attachmentDto) {
-
-        Project project = projectService.findProject(projectId);
-        /*
-        Attachment attachment = modelMapper.map(attachmentDto, Attachment.class);
-        attachment.setProject(project);
-        attachment = attachmentRepository.save(attachment);
-         */
-        Attachment attachment = processFile(attachmentDto.getFile());
-        attachment.setProject(project);
-        attachment = attachmentRepository.save(attachment);
-        // project.getAttachments().add(attachment);
-        return attachment;
-    }
-
-    @Transactional
-    public Attachment addTicketAttachment(Long ticketId, AttachmentRequestDTO attachmentDto) {
-
-        Ticket ticket = ticketService.findTicket(ticketId);
-        /*
-        Attachment attachment = modelMapper.map(attachmentDto, Attachment.class);
-        attachment.setTicket(ticket);
-        attachment = attachmentRepository.save(attachment);
-        */
-        Attachment attachment = processFile(attachmentDto.getFile());
-        ticket.getAttachments().add(attachment);
-
-        return attachment;
-    }
-
-
-
-    @Transactional
-    public Attachment updateAttachment(Long id, AttachmentRequestDTO attachmentDto) {
-        // TODO: Wont be ablo to update - only delete and add another
-        String username =  SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Attachment attachment = attachmentRepository.findByIdAndUserUsername(id, username)
+    public ResponseEntity<byte[]> downloadFile(Long attachmentId) {
+        // String username =  SecurityContextHolder.getContext().getAuthentication().getName();
+        Attachment attachment = attachmentRepository.findById(attachmentId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        modelMapper.map(attachmentDto, attachment);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(attachment.getType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + attachment.getName() + "\"")
+                .body(attachment.getData());
+    }
+
+
+    @Transactional
+    public Attachment uploadProjectAttachment(Long projectId, MultipartFile file) {
+
+        Project project = projectService.findProject(projectId);
+
+        Attachment attachment = uploadFile(file);
+        attachment.setProject(project);
         attachment = attachmentRepository.save(attachment);
 
         return attachment;
     }
+
+    @Transactional
+    public Attachment uploadTicketAttachment(Long ticketId, MultipartFile file) {
+
+        Ticket ticket = ticketService.findTicket(ticketId);
+
+        Attachment attachment = uploadFile(file);
+        attachment.setTicket(ticket);
+        attachment = attachmentRepository.save(attachment);
+
+        return attachment;
+    }
+
 
     @Transactional
     public void deleteAttachment(Long id) {
@@ -102,12 +87,14 @@ public class AttachmentService {
         attachmentRepository.delete(attachment);
     }
 
-    public Collection<Attachment> findAttachments() {
+    public Attachment findAttachment(Long id) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
-        return attachmentRepository.findByUserUsername(username);
+
+        return attachmentRepository.findByIdAndUserUsername(id, username)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
-    public Attachment findAttachment(Long id) {
+    public Attachment findAttachments(Long id) {
         String username =  SecurityContextHolder.getContext().getAuthentication().getName();
 
         return attachmentRepository.findByIdAndUserUsername(id, username)

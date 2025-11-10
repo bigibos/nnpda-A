@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttachmentRespondDTO {
+    private Long id;
     private String name;
     private String type;
-    private byte[] data;
 }
 
