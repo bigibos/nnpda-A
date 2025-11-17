@@ -1,9 +1,11 @@
 package cz.upce.fei.nnpda.service;
 
 import cz.upce.fei.nnpda.component.JwtService;
+import cz.upce.fei.nnpda.domain.Ticket;
 import cz.upce.fei.nnpda.domain.User;
 import cz.upce.fei.nnpda.dto.User.*;
 import cz.upce.fei.nnpda.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -11,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 
 @Service
 @Slf4j
@@ -21,6 +25,15 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+
+    public User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
+    public Collection<User> findUsers() {
+        return userRepository.findAll();
+    }
 
     public ResponseEntity<?> register(UserRegisterDTO userDto) {
         User user = modelMapper.map(userDto, User.class);

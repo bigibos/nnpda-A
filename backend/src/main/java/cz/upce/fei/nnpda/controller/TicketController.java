@@ -4,6 +4,7 @@ import cz.upce.fei.nnpda.dto.Comment.CommentRequestDTO;
 import cz.upce.fei.nnpda.dto.Comment.CommentRespondDTO;
 import cz.upce.fei.nnpda.dto.Ticket.TicketAddDTO;
 import cz.upce.fei.nnpda.dto.Ticket.TicketRespondDTO;
+import cz.upce.fei.nnpda.dto.Ticket.TicketSearchDTO;
 import cz.upce.fei.nnpda.dto.Ticket.TicketUpdateDTO;
 import cz.upce.fei.nnpda.service.CommentService;
 import cz.upce.fei.nnpda.service.TicketService;
@@ -23,6 +24,12 @@ public class TicketController {
     private final ModelMapper modelMapper;
     private final TicketService ticketService;
     private final CommentService commentService;
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/tickets/search")
+    public Collection<TicketSearchDTO> searchTicket(@RequestParam("k") String keyword) {
+        return ticketService.searchTicket(keyword);
+    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/projects/{projectId}/tickets")

@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name="ticket")
+@SQLDelete(sql = "UPDATE ticket SET deleted = true WHERE id=?")
 public class Ticket {
 
     public enum Status {
@@ -39,6 +43,7 @@ public class Ticket {
 
     private String name;
 
+    private Timestamp time;
     private Status status;
     private Type type;
     private Priority priority;
@@ -61,6 +66,8 @@ public class Ticket {
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Attachment> attachments = new ArrayList<>();
+
+    private boolean deleted = Boolean.FALSE;
 
     public Ticket() {}
 }

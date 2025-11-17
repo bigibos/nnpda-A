@@ -1,20 +1,36 @@
 package cz.upce.fei.nnpda.service;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.upce.fei.nnpda.domain.Project;
 import cz.upce.fei.nnpda.domain.Ticket;
 import cz.upce.fei.nnpda.domain.TicketLog;
+import cz.upce.fei.nnpda.domain.User;
 import cz.upce.fei.nnpda.dto.Ticket.TicketAddDTO;
+import cz.upce.fei.nnpda.dto.Ticket.TicketSearchDTO;
 import cz.upce.fei.nnpda.dto.Ticket.TicketUpdateDTO;
+import cz.upce.fei.nnpda.repository.ProjectRepository;
 import cz.upce.fei.nnpda.repository.TicketRepository;
+import cz.upce.fei.nnpda.repository.TicketSearchRepository;
+import cz.upce.fei.nnpda.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Collection;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -24,6 +40,63 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final ProjectService projectService;
     private final TicketLogService ticketLogService;
+    private final UserService userService;
+    private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
+    private final ElasticsearchClient elasticsearchClient;
+    private final RestTemplateBuilder restTemplateBuilder;
+    private final ObjectMapper objectMapper;
+    private final TicketSearchRepository ticketSearchRepository;
+
+    private <T> T getRandomEnum(T[] values) {
+        Random random = new Random();
+        return values[random.nextInt(values.length)];
+    }
+
+    // @Scheduled(fixedDelay = 1 * 60 * 1000)
+    public void generateTicket() {
+        Random random = new Random();
+
+        System.out.println("Jdu generovat");
+
+        List<Project> projects = projectRepository.findAll();
+        if (projects.isEmpty()) {
+            return;
+        }
+        Project project = projects.get(random.nextInt(projects.size()));
+
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()) {
+            return;
+        }
+        User user = users.get(random.nextInt(users.size()));
+
+        Ticket.Status status = getRandomEnum(Ticket.Status.values());
+        Ticket.Type type = getRandomEnum(Ticket.Type.values());
+        Ticket.Priority priority = getRandomEnum(Ticket.Priority.values());
+
+        Ticket ticket = new Ticket();
+        ticket.setTime(new Timestamp(System.currentTimeMillis()));
+        ticket.setName("Ticket " + type.name() + "(" + ticket.getTime() + ")");
+        ticket.setStatus(status);
+        ticket.setType(type);
+        ticket.setPriority(priority);
+        ticket.setProject(project);
+        ticket.setUser(user);
+
+        System.out.println("Vygenerovano");
+
+        ticketRepository.save(ticket);
+
+    }
+
+
+    public Collection<TicketSearchDTO> searchTicket(String keyword) {
+        List<TicketSearchDTO> searchResults = ticketSearchRepository.findByNameContaining(keyword);
+
+        return searchResults;
+    }
+
 
     @Transactional
     public Ticket addTicket(Long projectId, TicketAddDTO ticketDto) {
